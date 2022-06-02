@@ -29,7 +29,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, errors.New("invalid credentials"), http.StatusBadRequest)
 	}
 
-	app.writeJSON(w, http.StatusOK, jsonResponse{
+	app.writeJSON(w, http.StatusAccepted, jsonResponse{
 		Error:   false,
 		Message: "Logged in",
 		Data:    user,
