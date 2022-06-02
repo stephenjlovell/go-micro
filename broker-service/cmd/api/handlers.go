@@ -37,11 +37,6 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	default:
 		app.errorJSON(w, errors.New("unknown action"))
 	}
-
-	_ = app.writeJSON(w, http.StatusOK, jsonResponse{
-		Error:   false,
-		Message: "Hit the broker",
-	})
 }
 
 func (app *Config) Authenticate(w http.ResponseWriter, a AuthPayload) {
