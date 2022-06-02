@@ -1,5 +1,6 @@
 front-end/frontApp
-broker-service/BrokerApp
+broker-service/brokerApp
+authentication-service/authApp
 .vscode/
 **/.DS_Store
 **/.DS_Store?
