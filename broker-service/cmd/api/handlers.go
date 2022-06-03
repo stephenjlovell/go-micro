@@ -39,9 +39,11 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	payload := &SubmissionPayload{}
-
 	err := app.readJSON(w, r, payload)
-	app.handleError(err, w)
+	if err != nil {
+		_ = app.errorJSON(w, err)
+		return
+	}
 	errCode := http.StatusUnprocessableEntity
 	switch payload.Action {
 	case "auth":
@@ -53,7 +55,8 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		err = errors.New("unknown action")
 	}
 	if err != nil {
-		app.errorJSON(w, err, errCode)
+		_ = app.errorJSON(w, err, errCode)
+		return
 	}
 }
 
@@ -75,7 +78,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) error {
 	if err != nil || serviceResponse.Error {
 		return errors.New("unable to authenticate")
 	}
-	app.writeJSON(w, http.StatusAccepted, &jsonResponse{
+	return app.writeJSON(w, http.StatusAccepted, &jsonResponse{
 		Error:   false,
 		Message: "authenticated",
 		Data:    serviceResponse.Data,
@@ -93,7 +96,7 @@ func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
 		return errors.New(fmt.Sprintf("request failed: %s", err))
 	}
 	// send response
-	app.writeJSON(w, http.StatusAccepted, &jsonResponse{
+	return app.writeJSON(w, http.StatusAccepted, &jsonResponse{
 		Error:   false,
 		Message: "logged",
 	})
