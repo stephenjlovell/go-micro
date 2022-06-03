@@ -14,7 +14,7 @@ import (
 const webPort = "80"
 const rpcPort = "5001"
 const grpcPort = "50001"
-const mongoUrl = "mongodb:27017"
+const mongoUrl = "mongodb://mongo:27017"
 
 var client *mongo.Client
 
@@ -51,8 +51,8 @@ func main() {
 	app := Config{
 		Models: data.New(client),
 	}
-
-	go app.serve()
+	log.Println("starting logger service on port " + webPort)
+	app.serve()
 }
 
 func connectToMongo() (*mongo.Client, error) {
