@@ -10,7 +10,7 @@ up:
 	@echo "Docker images started!"
 
 ## up_build: stops docker-compose (if running), builds all projects and starts docker compose
-up_build: tidy build_broker build_front build_auth build_logger
+up_build: build
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Building (when required) and starting docker images..."
@@ -22,6 +22,8 @@ down:
 	@echo "Stopping docker compose..."
 	docker-compose down
 	@echo "Done!"
+
+build: build_broker build_front build_auth build_logger
 
 build_broker:
 	@echo "Building broker binary..."
@@ -50,4 +52,4 @@ tidy:
 	cd ../front-end && go mod tidy
 	cd ../broker-service && go mod tidy
 	cd ../logger-service && go mod tidy
-	@echo "done..."
+	@echo "Done!"
