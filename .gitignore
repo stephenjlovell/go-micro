@@ -1,6 +1,7 @@
 front-end/frontApp
 broker-service/brokerApp
 authentication-service/authApp
+logger-service/loggerApp
 .vscode/
 **/.DS_Store
 **/.DS_Store?
