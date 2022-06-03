@@ -40,13 +40,9 @@ build_auth:
 	cd ../authentication-service && env GOOS=linux CGO_ENABLED=0 go build -o ${AUTH_BINARY} ./cmd/api
 	@echo "Done!"
 
-## start: starts the front end
-start: build_front
-	@echo "Starting front end"
-	cd ../front-end && ./${FRONT_END_BINARY} &
-
-## stop: stop the front end
-stop:
-	@echo "Stopping front end..."
-	@-pkill -SIGTERM -f "./${FRONT_END_BINARY}"
-	@echo "Stopped front end!"
+tidy:
+	@echo "Updating modules..."
+	cd ../authentication-service && go mod tidy
+	cd ../front-end && go mod tidy
+	cd ../broker-service && go mod tidy
+	@echo "done..."
