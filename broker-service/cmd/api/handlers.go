@@ -103,7 +103,6 @@ func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
 }
 
 func (app *Config) doServiceRequest(method, url string, data any) (*http.Response, error) {
-	// TODO: duplicated in Authenticate()
 	jsonData, _ := json.MarshalIndent(data, "", "\t")
 	// call the service
 	request, err := http.NewRequest("POST", loggerServiceUrl, bytes.NewBuffer(jsonData))
