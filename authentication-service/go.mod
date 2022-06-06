@@ -1,4 +1,4 @@
-module authentication
+module github.com/stephenjlovell/go-micro/authentication
 
 go 1.18
 

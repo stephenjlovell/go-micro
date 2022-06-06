@@ -1,4 +1,4 @@
-module github.com/stephenjlovell/broker
+module github.com/stephenjlovell/go-micro/broker
 
 go 1.18
 

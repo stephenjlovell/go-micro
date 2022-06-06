@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/stephenjlovell/logger/data"
+	"github.com/stephenjlovell/go-micro/logger/data"
 )
 
 type LoggerPayload struct {

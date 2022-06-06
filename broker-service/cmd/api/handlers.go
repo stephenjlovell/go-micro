@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -105,7 +104,6 @@ func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
 
 func (app *Config) doServiceRequest(method, url string, data any) (*http.Response, error) {
 	jsonData, _ := json.MarshalIndent(data, "", "\t")
-	log.Println(jsonData)
 	// call the service
 	request, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
 	if err != nil {

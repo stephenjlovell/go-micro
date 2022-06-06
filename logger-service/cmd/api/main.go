@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stephenjlovell/logger/data"
+	"github.com/stephenjlovell/go-micro/logger/data"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

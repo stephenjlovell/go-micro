@@ -1,4 +1,4 @@
-module github.com/stephenjlovell/logger
+module github.com/stephenjlovell/go-micro/logger
 
 go 1.18
 
