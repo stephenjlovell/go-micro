@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/stephenjlovell/go-micro/logger/data"
+
+	helpers "github.com/stephenjlovell/json-helpers"
 )
 
 type LoggerPayload struct {
@@ -13,18 +15,18 @@ type LoggerPayload struct {
 
 func (app *Config) WriteLog(w http.ResponseWriter, r *http.Request) {
 	requestPayload := &LoggerPayload{}
-	_ = app.readJSON(w, r, requestPayload)
+	_ = helpers.ReadJSON(w, r, requestPayload)
 	event := data.LogEntry{
 		Name: requestPayload.Name,
 		Data: requestPayload.Data,
 	}
 	err := app.Models.LogEntry.Insert(event)
 	if err != nil {
-		app.errorJSON(w, err)
+		helpers.ErrorJSON(w, err)
 		return
 	}
 
-	app.writeJSON(w, http.StatusAccepted, jsonResponse{
+	helpers.WriteJSON(w, http.StatusAccepted, helpers.JsonResponse{
 		Error:   false,
 		Message: "logged",
 	})

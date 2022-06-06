@@ -11,6 +11,7 @@ require (
 	github.com/go-chi/cors v1.2.1
 	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgx/v4 v4.16.1
+	github.com/stephenjlovell/json-helpers v0.0.0-20220606185835-8aa9038b16d2
 )
 
 require (

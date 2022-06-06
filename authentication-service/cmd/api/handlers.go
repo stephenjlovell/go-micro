@@ -1,12 +1,13 @@
 package main
 
 import (
-	"authentication/data"
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+
+	helpers "github.com/stephenjlovell/json-helpers"
+
+	"github.com/stephenjlovell/go-micro/authentication/data"
 )
 
 type AuthPayload struct {
@@ -27,7 +28,7 @@ const (
 func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	authPayload, err := app.readAuthPayload(w, r)
 	if err != nil {
-		app.errorJSON(w, err, http.StatusBadRequest)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 		return
 	}
 	user, err := app.doAuthenticate(w, r, authPayload)
@@ -35,10 +36,10 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 	var outcome string
 	if err != nil {
 		outcome = "failed"
-		app.errorJSON(w, err, http.StatusBadRequest)
+		helpers.ErrorJSON(w, err, http.StatusBadRequest)
 	} else {
 		outcome = "succeded"
-		app.writeJSON(w, http.StatusAccepted, jsonResponse{
+		helpers.WriteJSON(w, http.StatusAccepted, helpers.JsonResponse{
 			Error:   false,
 			Message: "Logged in",
 			Data:    user,
@@ -49,7 +50,7 @@ func (app *Config) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 // log result of authentication attempt
 func (app *Config) doLogging(outcome, data string) (err error) {
-	response, err := app.doServiceRequest("POST", loggerServiceUrl, LoggerPayload{
+	response, err := helpers.DoRequest("POST", loggerServiceUrl, LoggerPayload{
 		Name: fmt.Sprintf("login attempt %s", outcome),
 		Data: data,
 	})
@@ -64,7 +65,7 @@ func (app *Config) doLogging(outcome, data string) (err error) {
 
 func (app *Config) readAuthPayload(w http.ResponseWriter, r *http.Request) (*AuthPayload, error) {
 	payload := &AuthPayload{}
-	err := app.readJSON(w, r, payload)
+	err := helpers.ReadJSON(w, r, payload)
 	return payload, err
 }
 
@@ -78,16 +79,4 @@ func (app *Config) doAuthenticate(w http.ResponseWriter, r *http.Request, payloa
 		return nil, errors.New("invalid credentials")
 	}
 	return user, nil
-}
-
-// TODO: duplicated in broker-service
-func (app *Config) doServiceRequest(method, url string, data any) (*http.Response, error) {
-	jsonData, _ := json.MarshalIndent(data, "", "\t")
-	// call the service
-	request, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	client := &http.Client{}
-	return client.Do(request)
 }

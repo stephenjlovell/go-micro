@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/stephenjlovell/go-micro/helpers"
+	helpers "github.com/stephenjlovell/json-helpers"
 )
 
 const (
@@ -31,7 +31,7 @@ type SubmissionPayload struct {
 }
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
-	payload := jsonResponse{
+	payload := helpers.JsonResponse{
 		Error:   false,
 		Message: "Hit the broker",
 	}
@@ -74,12 +74,12 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) error {
 		return errors.New("unable to authenticate")
 	}
 	// send response
-	serviceResponse := &jsonResponse{}
+	serviceResponse := &helpers.JsonResponse{}
 	err = json.NewDecoder(response.Body).Decode(serviceResponse)
 	if err != nil || serviceResponse.Error {
 		return errors.New("unable to authenticate")
 	}
-	return helpers.WriteJSON(w, http.StatusAccepted, &jsonResponse{
+	return helpers.WriteJSON(w, http.StatusAccepted, &helpers.JsonResponse{
 		Error:   false,
 		Message: "authenticated",
 		Data:    serviceResponse.Data,
@@ -97,7 +97,7 @@ func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
 		return errors.New(fmt.Sprintf("request failed: %s", err))
 	}
 	// send response
-	return helpers.WriteJSON(w, http.StatusAccepted, &jsonResponse{
+	return helpers.WriteJSON(w, http.StatusAccepted, &helpers.JsonResponse{
 		Error:   false,
 		Message: "logged",
 	})

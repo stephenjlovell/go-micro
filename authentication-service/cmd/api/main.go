@@ -1,13 +1,14 @@
 package main
 
 import (
-	"authentication/data"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/stephenjlovell/go-micro/authentication/data"
 
 	_ "github.com/jackc/pgconn"
 	_ "github.com/jackc/pgx/v4"
