@@ -1,11 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/stephenjlovell/go-micro/helpers"
 )
 
 const (
@@ -34,14 +35,14 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 		Error:   false,
 		Message: "Hit the broker",
 	}
-	_ = app.writeJSON(w, http.StatusOK, payload)
+	_ = helpers.WriteJSON(w, http.StatusOK, payload)
 }
 
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	payload := &SubmissionPayload{}
-	err := app.readJSON(w, r, payload)
+	err := helpers.ReadJSON(w, r, payload)
 	if err != nil {
-		_ = app.errorJSON(w, err)
+		_ = helpers.ErrorJSON(w, err)
 		return
 	}
 	errCode := http.StatusUnprocessableEntity
@@ -55,13 +56,13 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		err = errors.New("unknown action")
 	}
 	if err != nil {
-		_ = app.errorJSON(w, err, errCode)
+		_ = helpers.ErrorJSON(w, err, errCode)
 		return
 	}
 }
 
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) error {
-	response, err := app.doServiceRequest("POST", authenticationServiceUrl, a)
+	response, err := helpers.DoRequest("POST", authenticationServiceUrl, a)
 	if err != nil {
 		return err
 	}
@@ -78,7 +79,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) error {
 	if err != nil || serviceResponse.Error {
 		return errors.New("unable to authenticate")
 	}
-	return app.writeJSON(w, http.StatusAccepted, &jsonResponse{
+	return helpers.WriteJSON(w, http.StatusAccepted, &jsonResponse{
 		Error:   false,
 		Message: "authenticated",
 		Data:    serviceResponse.Data,
@@ -86,7 +87,7 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) error {
 }
 
 func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
-	response, err := app.doServiceRequest("POST", loggerServiceUrl, l)
+	response, err := helpers.DoRequest("POST", loggerServiceUrl, l)
 	if err != nil {
 		return err
 	}
@@ -96,19 +97,8 @@ func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
 		return errors.New(fmt.Sprintf("request failed: %s", err))
 	}
 	// send response
-	return app.writeJSON(w, http.StatusAccepted, &jsonResponse{
+	return helpers.WriteJSON(w, http.StatusAccepted, &jsonResponse{
 		Error:   false,
 		Message: "logged",
 	})
-}
-
-func (app *Config) doServiceRequest(method, url string, data any) (*http.Response, error) {
-	jsonData, _ := json.MarshalIndent(data, "", "\t")
-	// call the service
-	request, err := http.NewRequest(method, url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, err
-	}
-	client := &http.Client{}
-	return client.Do(request)
 }

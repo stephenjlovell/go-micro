@@ -57,7 +57,7 @@ func ErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 		statusCode = status[0]
 	}
 
-	payload := jsonResponse{
+	payload := JsonResponse{
 		Error:   true,
 		Message: err.Error(),
 	}
