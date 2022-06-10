@@ -1,10 +1,8 @@
-module github.com/stephenjlovell/go-micro/broker
+module github.com/stephenjlovell/go-micro/listener
 
 go 1.18
 
 require (
-	github.com/go-chi/chi/v5 v5.0.7
-	github.com/go-chi/cors v1.2.1
 	github.com/rabbitmq/amqp091-go v1.3.4
 	github.com/stephenjlovell/json-helpers v0.0.0-20220606185835-8aa9038b16d2
 )

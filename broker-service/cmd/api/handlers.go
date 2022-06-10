@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
+	"github.com/stephenjlovell/go-micro/broker/event"
 	helpers "github.com/stephenjlovell/json-helpers"
 )
 
@@ -51,7 +51,8 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		err = app.authenticate(w, payload.Auth)
 		errCode = http.StatusUnauthorized
 	case "log":
-		err = app.logItem(w, payload.Log)
+		err = app.logEventViaRabbit(w, payload.Log)
+		errCode = http.StatusUnprocessableEntity
 	default:
 		err = errors.New("unknown action")
 	}
@@ -86,19 +87,26 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) error {
 	})
 }
 
-func (app *Config) logItem(w http.ResponseWriter, l LoggerPayload) error {
-	response, err := helpers.DoRequest("POST", loggerServiceUrl, l)
+func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LoggerPayload) error {
+	err := app.doLogEvent(w, l)
 	if err != nil {
 		return err
-	}
-	defer response.Body.Close()
-	// make sure we get back the correct status code
-	if response.StatusCode != http.StatusAccepted {
-		return errors.New(fmt.Sprintf("request failed: %s", err))
 	}
 	// send response
 	return helpers.WriteJSON(w, http.StatusAccepted, &helpers.JsonResponse{
 		Error:   false,
-		Message: "logged",
+		Message: "logged via RabbitMQ",
 	})
+}
+
+func (app *Config) doLogEvent(w http.ResponseWriter, l LoggerPayload) error {
+	emitter, err := event.NewEventEmitter(app.Rabbit)
+	if err != nil {
+		return err
+	}
+	j, err := json.MarshalIndent(l, "", "\t")
+	if err != nil {
+		return err
+	}
+	return emitter.Push(string(j), "log.INFO")
 }

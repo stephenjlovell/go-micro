@@ -2,6 +2,7 @@ FRONT_END_BINARY=frontApp
 BROKER_BINARY=brokerApp
 AUTH_BINARY=authApp
 LOGGER_BINARY=loggerApp
+LISTENER_BINARY=listenerApp
 
 ## up: starts all containers in the background without forcing build
 up:
@@ -23,7 +24,7 @@ down:
 	docker-compose down
 	@echo "Done!"
 
-build: build_broker build_front build_auth build_logger
+build: build_broker build_front build_auth build_logger build_listener
 
 build_broker:
 	@echo "Building broker binary..."
@@ -45,6 +46,11 @@ build_logger:
 	cd ../logger-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LOGGER_BINARY} ./cmd/api
 	@echo "Done!"
 
+build_listener:
+	@echo "Building listener binary..."
+	cd ../listener-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LISTENER_BINARY} ./
+	@echo "Done!"
+
 # runs 'go mod tidy' for each microservice
 tidy:
 	@echo "Updating modules..."
@@ -52,4 +58,5 @@ tidy:
 	cd ../front-end && go mod tidy
 	cd ../broker-service && go mod tidy
 	cd ../logger-service && go mod tidy
+	cd ../listener-service && go mod tidy
 	@echo "Done!"

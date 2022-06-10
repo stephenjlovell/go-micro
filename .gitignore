@@ -2,6 +2,7 @@ front-end/frontApp
 broker-service/brokerApp
 authentication-service/authApp
 logger-service/loggerApp
+listener-service/listenerApp
 .vscode/
 **/.DS_Store
 **/.DS_Store?
